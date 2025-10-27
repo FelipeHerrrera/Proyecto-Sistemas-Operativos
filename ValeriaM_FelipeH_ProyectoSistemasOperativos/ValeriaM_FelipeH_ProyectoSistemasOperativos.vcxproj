@@ -132,8 +132,12 @@
     <ClCompile Include="tenedor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camarero.h" />
     <ClInclude Include="filosofo.h" />
     <ClInclude Include="tenedor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
