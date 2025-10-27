@@ -132,6 +132,7 @@
     <ClCompile Include="tenedor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camarero.h" />
     <ClInclude Include="filosofo.h" />
     <ClInclude Include="tenedor.h" />
   </ItemGroup>
