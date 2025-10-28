@@ -35,7 +35,5 @@ int main() {
         hilo.join();
     }
 
-    std::cout << "Hola mundo";
-
     return 0;
 }
