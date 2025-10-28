@@ -4,9 +4,11 @@
 class tenedor {
 public:
     tenedor() = default;
-    // No copiar ni mover tenedors
+    // No copiable ni movible
     tenedor(const tenedor&) = delete;
     tenedor& operator=(const tenedor&) = delete;
+    tenedor(tenedor&&) = delete;
+    tenedor& operator=(tenedor&&) = delete;
 
     std::mutex& getMutex() { return mtx_; }
 
