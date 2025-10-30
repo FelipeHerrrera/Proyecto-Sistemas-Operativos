@@ -4,6 +4,25 @@
 #include <mutex>
 #include <thread>
 #include <cmath>
+#include <sstream>
+#include <iomanip>
+#include <string>
+
+namespace {
+    std::mutex g_log_mtx;
+    std::once_flag g_log_header_once;
+
+    void print_log_header_unlocked() {
+        std::cout << "\n===== LOG DE ESTADOS =====\n";
+        std::cout << "+---------+-----------+-----------+\n";
+        std::cout << "| Tiempo  | Filosofo  | Estado    |\n";
+        std::cout << "+---------+-----------+-----------+\n";
+    }
+    void print_log_header() {
+        std::lock_guard<std::mutex> lk(g_log_mtx);
+        print_log_header_unlocked();
+    }
+}
 
 std::chrono::steady_clock::time_point filosofo::start_{};
 
@@ -15,7 +34,16 @@ void filosofo::log_estado(const char* estado) const {
     using clock = std::chrono::steady_clock;
     auto now = clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_).count();
-    std::cout << "[" << ms << "ms] Filosofo " << id_ << ": " << estado << std::endl;
+
+    std::call_once(g_log_header_once, print_log_header);
+
+    std::ostringstream oss;
+    oss << "| " << std::setw(7) << ms << "ms | "
+        << "Filosofo " << std::setw(2) << id_ << " | "
+        << std::left << std::setw(10) << estado << "|";
+
+    std::lock_guard<std::mutex> lk(g_log_mtx);
+    std::cout << oss.str() << std::endl;
 }
 
 void filosofo::cenar() {

@@ -40,7 +40,7 @@ int main() {
     }
 
     // Métricas al finalizar
-    std::cout << "===== METRICAS =====" << std::endl;
+    std::cout << "\n===== METRICAS =====" << std::endl;
     bool todos_comieron = true;
     for (const auto& f : filosofos) {
         std::cout << "Filosofo " << f.id()
