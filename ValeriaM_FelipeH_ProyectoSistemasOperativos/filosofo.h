@@ -12,6 +12,8 @@ public:
 
     // Configurar tiempo de inicio global para timestamps relativos
     static void set_start(std::chrono::steady_clock::time_point tp) { start_ = tp; }
+    // Configurar tiempo de fin global para terminar la simulación por tiempo
+    static void set_end(std::chrono::steady_clock::time_point tp) { end_ = tp; }
 
     // Métricas y getters
     int id() const { return id_; }
@@ -39,8 +41,9 @@ private:
     double wait_sq_sum_ms_ =0.0;
     double wait_max_ms_ =0.0;
 
-    // start time global a todos los filósofos
+    // start/end time global a todos los filósofos
     static std::chrono::steady_clock::time_point start_;
+    static std::chrono::steady_clock::time_point end_;
 
     // helper de logging con timestamp relativo
     void log_estado(const char* estado) const;

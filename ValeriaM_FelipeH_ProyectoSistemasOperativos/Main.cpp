@@ -10,7 +10,12 @@ const int num_filosofos =5;
 
 int main() {
     using clock = std::chrono::steady_clock;
-    filosofo::set_start(clock::now());
+    auto start = clock::now();
+    filosofo::set_start(start);
+
+    // Duración por defecto (10s) hasta agregar CLI
+    auto duracion = std::chrono::seconds(10);
+    filosofo::set_end(start + duracion);
 
     // Crear tenedores
     std::vector<tenedor> tenedores(num_filosofos);

@@ -25,6 +25,7 @@ namespace {
 }
 
 std::chrono::steady_clock::time_point filosofo::start_{};
+std::chrono::steady_clock::time_point filosofo::end_{};
 
 filosofo::filosofo(int id, tenedor& left, tenedor& right, camarero& waiter)
     : id_(id), left_tenedor_(left), right_tenedor_(right), waiter_(waiter) {
@@ -50,8 +51,7 @@ void filosofo::cenar() {
     using namespace std::chrono_literals;
     using clock = std::chrono::steady_clock;
 
-    // Ciclos de vida del filósofo: PENSANDO -> HAMBRIENTO -> COMIENDO -> DORMIR
-    for (int ciclo =0; ciclo <3; ++ciclo) {
+    while (clock::now() < end_) {
         // PENSANDO
         log_estado("PENSANDO");
         std::this_thread::sleep_for(500ms);
@@ -63,21 +63,21 @@ void filosofo::cenar() {
         // Solicitar permiso al camarero antes de intentar tomar los tenedores
         waiter_.solicitar_permiso();
 
+        // Preparar locks de ambos tenedores fuera del if para que vivan durante COMIENDO
+        std::unique_lock<std::mutex> l(left_tenedor_.getMutex(), std::defer_lock);
+        std::unique_lock<std::mutex> r(right_tenedor_.getMutex(), std::defer_lock);
+
         // Asimetría de orden de adquisición: pares D->I, impares I->D
         bool par = (id_ %2)==0;
         if (par) {
             // par: derecho luego izquierdo, adquiriendo ambos sin interbloqueo
-            std::unique_lock<std::mutex> r(right_tenedor_.getMutex(), std::defer_lock);
-            std::unique_lock<std::mutex> l(left_tenedor_.getMutex(), std::defer_lock);
             std::lock(r, l);
         } else {
             // impar: izquierdo luego derecho
-            std::unique_lock<std::mutex> l(left_tenedor_.getMutex(), std::defer_lock);
-            std::unique_lock<std::mutex> r(right_tenedor_.getMutex(), std::defer_lock);
             std::lock(l, r);
         }
 
-        // COMIENDO (ambos tenedores adquiridos)
+        // COMIENDO (ambos tenedores adquiridos; locks activos en este scope)
         auto t_comer = clock::now();
         double wait_ms = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(t_comer - t_hambre).count());
         wait_sum_ms_ += wait_ms;
@@ -87,7 +87,7 @@ void filosofo::cenar() {
         log_estado("COMIENDO");
         std::this_thread::sleep_for(600ms);
 
-        // Al salir de los bloques de lock, se liberan tenedores automáticamente
+        // Al salir del scope, se liberan los tenedores automáticamente (RAII)
         // Liberar permiso cuando termina de comer
         waiter_.liberar_permiso();
 
@@ -96,6 +96,6 @@ void filosofo::cenar() {
         std::this_thread::sleep_for(400ms);
     }
 
-    // Fin de ciclos de demostración
+    // Fin
     log_estado("FIN");
 }
