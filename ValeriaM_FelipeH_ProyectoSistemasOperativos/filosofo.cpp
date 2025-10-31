@@ -36,14 +36,14 @@ void filosofo::log_estado(const char* estado) const {
     auto now = clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_).count();
 
-    std::call_once(g_log_header_once, print_log_header);
+    std::lock_guard<std::mutex> lk(g_log_mtx);
+    std::call_once(g_log_header_once, print_log_header_unlocked);
 
     std::ostringstream oss;
     oss << "| " << std::setw(7) << ms << "ms | "
         << "Filosofo " << std::setw(2) << id_ << " | "
         << std::left << std::setw(10) << estado << "|";
 
-    std::lock_guard<std::mutex> lk(g_log_mtx);
     std::cout << oss.str() << std::endl;
 }
 
