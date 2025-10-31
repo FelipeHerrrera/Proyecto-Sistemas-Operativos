@@ -50,9 +50,9 @@ int main() {
     for (const auto& f : filosofos) {
         std::cout << "Filosofo " << f.id()
                   << ": comidas=" << f.comidas()
-                  << ", espera_prom_ms=" << f.promedio_espera_ms()
-                  << ", espera_max_ms=" << f.max_espera_ms()
-                  << ", desv_espera_ms=" << f.desviacion_espera_ms()
+                  << ", espera_promedio_ms=" << f.promedio_espera_ms()
+                  << ", espera_maxima_ms=" << f.max_espera_ms()
+                  << ", desviacion_espera_ms=" << f.desviacion_espera_ms()
                   << std::endl;
         if (f.comidas() <1) todos_comieron = false;
     }
