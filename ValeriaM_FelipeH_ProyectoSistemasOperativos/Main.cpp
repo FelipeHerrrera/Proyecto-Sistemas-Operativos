@@ -2,6 +2,8 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <fstream>
+#include <iomanip>
 #include "filosofo.h"
 #include "tenedor.h"
 #include "camarero.h"
@@ -57,6 +59,29 @@ int main() {
         if (f.comidas() <1) todos_comieron = false;
     }
     std::cout << "Verificacion (todos comieron >=1): " << (todos_comieron ? "OK" : "FALLO") << std::endl;
+
+    // Exportar métricas a CSV
+    try {
+        std::ofstream csv("metricas.csv", std::ios::out | std::ios::trunc);
+        if (!csv) {
+            std::cerr << "No se pudo crear el archivo metricas.csv" << std::endl;
+            return 1;
+        }
+        csv << "filosofo,comidas,espera_promedio_ms,espera_maxima_ms,desviacion_espera_ms" << '\n';
+        csv.setf(std::ios::fixed);
+        csv << std::setprecision(3);
+        for (const auto& f : filosofos) {
+            csv << f.id() << ','
+                << f.comidas() << ','
+                << f.promedio_espera_ms() << ','
+                << f.max_espera_ms() << ','
+                << f.desviacion_espera_ms() << '\n';
+        }
+        csv.close();
+        std::cout << "Archivo CSV generado: metricas.csv" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Error al escribir metricas.csv: " << e.what() << std::endl;
+    }
 
     return 0;
 }
