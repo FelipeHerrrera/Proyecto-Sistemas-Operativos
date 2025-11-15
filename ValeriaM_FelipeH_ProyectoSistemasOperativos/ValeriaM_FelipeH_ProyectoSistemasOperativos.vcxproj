@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="camarero.h" />
     <ClInclude Include="filosofo.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="tenedor.h" />
   </ItemGroup>
   <ItemGroup>
